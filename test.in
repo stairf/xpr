@@ -1,0 +1,853 @@
+# one integer
+0=0
+1=1
+2=2
+3=3
+4=4
+5=5
+6=6
+7=7
+8=8
+9=9
+10=10
+123456789=123456789
+000000001=1
+
+# constants
+pi~3.14159265358979323846
+e~2.7182818284590452354
+
+# spaces
+1 =1
+ 2=2
+ 3 =3
+	4=4
+5	=5
+	6	=6
+
+# unary +
++0=0
++1=1
++2=2
++3=3
++4=4
++5=5
+
+# unary -
+-0=0
+-1=-1
+-2=-2
+-3=-3
+-12345=-12345
+
+# multiple unary operators
+++0=0
+++1=1
+++++1=1
++-+-1=1
+-+-+-1=-1
+
+# unary operators and space
+ + 1 =1
+ + - 2 =-2
+ - + -  3 =3
+
+# binary +
+0+0=0
+0+1=1
+1+0=1
+1+1=2
+12+13=25
+1234+4321=5555
+
+# binary -
+0-0=0
+1-0=1
+2-1=1
+234-123=111
+9876-7654=2222
+
+# binary *
+0*1=0
+0*1234=0
+1*1234=1234
+2*234=468
+111*222=24642
+
+# binary /
+1/1=1
+2/1=2
+3/2=1.5
+1234/2=617
+
+# faulty division by zero
+!1/0
+!0/0
+
+# binary ^
+1^0=1
+1^-0=1
+1^1=1
+1^12345=1
+2^0=1
+2^-0=1
+2^2=4
+2^5=32
+2^10=1024
+3^3=27
+4^0.5=2
+9^0.5=3
+16^0.25=2
+
+# fauilty binary ^ with negative base and non-integer exponent
+!-1^0.5
+!-2^0.33
+!-3^0.99
+
+# fauilty single-token expressions
+!+
+!-
+!*
+!/
+!^
+!(
+!)
+! 
+!acos
+!acosh
+!asin
+!asinh
+!atan
+!atanh
+!cbrt
+!ceil
+!cos
+!cosh
+!exp
+!floor
+!log
+!max
+!min
+!round
+!sin
+!sinh
+!tan
+!tanh
+!x
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+!,
+
+# illegal characters
+!:
+!#
+!;
+!~
+!\
+!@
+!!
+!"
+!'
+!$
+!%
+!&
+!=
+!?
+!1:
+!1#
+!1;
+!1~
+!1\
+!1@
+!1!
+!1"
+!1'
+!1$
+!1%
+!1&
+!1=
+!1?
+!::
+!##
+!;;
+!~~
+!\\
+!@@
+!!!
+!""
+!''
+!$$
+!%%
+!&&
+!==
+!??
+
+# function call
+sqrt(4)=2
+cbrt(1331)=11
+
+# logarithm
+log(e^2)~2
+log(e)~1
+log(10,1000)~3
+log(10,100000)~5
+log(2,16)~4
+
+# trigonometric
+   asin(0)=0
++2*asin(1)~3.14159
+-2*asin(-1)~3.14159
++2*acos(0)~3.14159
+   acos(1)=0
++1*acos(-1)~3.14159
+   atan(0)=0
+sin(0)~0
+sin(pi/2)~1
+sin(pi)~0
+sin(3*pi/2)~-1
+sin(2*pi)~0
+cos(0)~1
+cos(pi/2)~0
+cos(pi)~-1
+cos(3*pi/2)~0
+cos(2*pi)~1
+tan(0)~0
+tan(2*pi)~0
+!sin(1,2)
+!cos(1,2)
+!tan(1,2)
+!sinh(1,2)
+!cosh(1,2)
+!tanh(1,2)
+!asin(1,2)
+!acos(1,2)
+!atan(1,2)
+!asinh(1,2)
+!acosh(1,2)
+!atanh(1,2)
+!sin()
+!cos()
+!tan()
+!sinh()
+!cosh()
+!tanh()
+!asin()
+!acos()
+!atan()
+!asinh()
+!acosh()
+!atanh()
+
+# round
+ceil(0)=0
+ceil(1)=1
+ceil(1.1)=2
+ceil(1.9)=2
+ceil(-1)=-1
+ceil(-1.1)=-1
+ceil(-1.9)=-1
+round(0)=0
+round(1.1)=1
+round(0.1)=0
+round(1.9)=2
+round(2.4999)=2
+
+!round(1,2
+!round()
+
+
+# min / max
+min(0)=0
+min( -123.4 )=-123.4
+min(1,2,3,4)=1
+min(-1 , 2 )=-1
+min(-1,-2,-3)=-3
+min(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20)=1
+!min()
+max(0)=0
+max( -123.4 )=-123.4
+max(1,2,3,4)=4
+max(-1 , 2 )=2
+max(-1,-2,-3)=-1
+max(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20)=20
+!max()
+
+# faulty double-token expressions
+!++
+!+-
+!+*
+!+/
+!+^
+!+(
+!+)
+!+ 
+!+acos
+!+acosh
+!+asin
+!+asinh
+!+atan
+!+atanh
+!+cbrt
+!+ceil
+!+cos
+!+cosh
+!+exp
+!+floor
+!+log
+!+max
+!+min
+!+round
+!+sin
+!+sinh
+!+tan
+!+tanh
+!+,
+!-+
+!--
+!-*
+!-/
+!-^
+!-(
+!-)
+!- 
+!-acos
+!-acosh
+!-asin
+!-asinh
+!-atan
+!-atanh
+!-cbrt
+!-ceil
+!-cos
+!-cosh
+!-exp
+!-floor
+!-log
+!-max
+!-min
+!-round
+!-sin
+!-sinh
+!-tan
+!-tanh
+!-,
+!*+
+!*-
+!**
+!*/
+!*^
+!*(
+!*)
+!* 
+!*acos
+!*acosh
+!*asin
+!*asinh
+!*atan
+!*atanh
+!*cbrt
+!*ceil
+!*cos
+!*cosh
+!*exp
+!*floor
+!*log
+!*max
+!*min
+!*round
+!*sin
+!*sinh
+!*tan
+!*tanh
+!*,
+!/+
+!/-
+!/*
+!//
+!/^
+!/(
+!/)
+!/ 
+!/acos
+!/acosh
+!/asin
+!/asinh
+!/atan
+!/atanh
+!/cbrt
+!/ceil
+!/cos
+!/cosh
+!/exp
+!/floor
+!/log
+!/max
+!/min
+!/round
+!/sin
+!/sinh
+!/tan
+!/tanh
+!/,
+!^+
+!^-
+!^*
+!^/
+!^^
+!^(
+!^)
+!^ 
+!^acos
+!^acosh
+!^asin
+!^asinh
+!^atan
+!^atanh
+!^cbrt
+!^ceil
+!^cos
+!^cosh
+!^exp
+!^floor
+!^log
+!^max
+!^min
+!^round
+!^sin
+!^sinh
+!^tan
+!^tanh
+!^,
+!(+
+!(-
+!(*
+!(/
+!(^
+!((
+!()
+!( 
+!(acos
+!(acosh
+!(asin
+!(asinh
+!(atan
+!(atanh
+!(cbrt
+!(ceil
+!(cos
+!(cosh
+!(exp
+!(floor
+!(log
+!(max
+!(min
+!(round
+!(sin
+!(sinh
+!(tan
+!(tanh
+!(,
+!)+
+!)-
+!)*
+!)/
+!)^
+!)(
+!))
+!) 
+!)acos
+!)acosh
+!)asin
+!)asinh
+!)atan
+!)atanh
+!)cbrt
+!)ceil
+!)cos
+!)cosh
+!)exp
+!)floor
+!)log
+!)max
+!)min
+!)round
+!)sin
+!)sinh
+!)tan
+!)tanh
+!),
+! +
+! -
+! *
+! /
+! ^
+! (
+! )
+!  
+! acos
+! acosh
+! asin
+! asinh
+! atan
+! atanh
+! cbrt
+! ceil
+! cos
+! cosh
+! exp
+! floor
+! log
+! max
+! min
+! round
+! sin
+! sinh
+! tan
+! tanh
+! ,
+!,+
+!,-
+!,*
+!,/
+!,^
+!,(
+!,)
+!, 
+!,acos
+!,acosh
+!,asin
+!,asinh
+!,atan
+!,atanh
+!,cbrt
+!,ceil
+!,cos
+!,cosh
+!,exp
+!,floor
+!,log
+!,max
+!,min
+!,round
+!,sin
+!,sinh
+!,tan
+!,tanh
+!,,
+!acos+
+!acos-
+!acos*
+!acos/
+!acos^
+!acos(
+!acos)
+!acos 
+!acos,
+
+# faulty + without second operand
+!1+
+!2 +
+!3 + 
+
+# fauilty - without second operand
+!1-
+!2 -
+!3 - 
+
+# fauilty * without first operand
+!*2
+! *3
+! * 4
+
+# faulty * without second operand
+!1*
+!2 *
+!3 * 
+
+# fauilty / without first operand
+!/2
+! /3
+! / 4
+
+# faulty / without second operand
+!1/
+!2 /
+!3 / 
+
+# fauilty ^ without first operand
+!^2
+! ^3
+! ^ 4
+
+# faulty ^ without second operand
+!2^
+!3 ^
+!4 ^ 
+
+# faulty braces
+!()
+! ()
+!( )
+!(,)
+!( ,)
+!(, )
+!(,,)
+!(,0)
+!(0,)
+!(0,0)
+!( 0,0)
+!(0 ,0)
+!(0, 0)
+!(0,0 )
+!( 0 ,0)
+!( 0, 0)
+!( 0,0 )
+!( 0 , 0)
+!( 0 ,0 )
+!( 0 , 0 )
+
+# two binary operators
+1+2+3=6
+1+2-3=0
+1+2*3=7
+1+2/4=1.5
+1+2^3=9
+1-2+3=2
+1-2-3=-4
+1-2*3=-5
+1-2/4=0.5
+1-2^3=-7
+2*3+4=10
+2*3-4=2
+2*3*4=24
+3*4/2=6
+4*2^3=32
+4/2+1=3
+4/2-3=-1
+4/2*3=6
+8/2/4=1
+4/2^3=0.5
+2^3+1=9
+2^3-7=1
+2^3*4=32
+2^3/4=2
+2^3^4=4096
+
+# braces
+(0)=0
+(((1)))=1
+ ( ( ( 2 ) ) ) =2
+((((((((((pi))))))))))~3.14159265358979323846
+
+# braces and binary operators
+1+(2+3)=6
+(1+2)+3=6
+1+(2-3)=0
+(1+2)-3=0
+1+(2*3)=7
+(1+2)*3=9
+1+(2/4)=1.5
+(1+3)/4=1
+1+(2^3)=9
+(1+2)^3=27
+1-(2+3)=-4
+(1-2)+3=2
+1-(2*3)=-5
+(1-2)*3=-3
+1-(2/4)=0.5
+(1-2)/5=-0.2
+1-(2^3)=-7
+(1-3)^3=-8
+2*(1+3)=8
+(2*3)+4=10
+2*(1-3)=-4
+(2*3)-4=2
+2*(3*4)=24
+(2*3)*5=30
+2*(2^3)=16
+(2*3)^2=36
+9/(1+2)=3
+(9/3)+2=5
+8/(4-2)=4
+(8/4)-1=1
+8/(2*2)=2
+(9/3)*2=6
+8/(2^3)=1
+(6/3)^4=16
+3^(1+2)=27
+(2^2)+3=7
+4^(5-3)=16
+(2^4)-9=7
+2^(2*2)=16
+(2^3)*3=24
+3^(8/4)=9
+(3^2)/6=1.5
+2^(2^3)=256
+(2^3)^2=64
+
+# nested braces and unary operators
++(+(1))=1
+-(-(1))=1
+-(-(-(1234)))=-1234
++ (+((++2)))=2
+- (+( (+-9) ))=9
+
+# nested braces and binary operators
+1+((2+3))=6
+((1+2))+3=6
+1+((2-3))=0
+((1+2))-3=0
+1+((2*3))=7
+((1+2))*3=9
+1+((2/4))=1.5
+((1+3))/4=1
+1+((2^3))=9
+((1+2))^3=27
+1-((2+3))=-4
+((1-2))+3=2
+1-((2*3))=-5
+((1-2))*3=-3
+1-((2/4))=0.5
+((1-2))/5=-0.2
+1-((2^3))=-7
+((1-3))^3=-8
+2*((1+3))=8
+((2*3))+4=10
+2*((1-3))=-4
+((2*3))-4=2
+2*((3*4))=24
+((2*3))*5=30
+2*((2^3))=16
+((2*3))^2=36
+9/((1+2))=3
+((9/3))+2=5
+8/((4-2))=4
+((8/4))-1=1
+8/((2*2))=2
+((9/3))*2=6
+8/((2^3))=1
+((6/3))^4=16
+3^((1+2))=27
+((2^2))+3=7
+4^((5-3))=16
+((2^4))-9=7
+2^((2*2))=16
+((2^3))*3=24
+3^((8/4))=9
+((3^2))/6=1.5
+2^((2^3))=256
+((2^3))^2=64
+(1)+(((((2+3)))))=6
+((((((1)+2)))))+3=6
+(1)+(((((2-3)))))=0
+((((((1)+2)))))-3=0
+(1)+(((((2*3)))))=7
+((((((1)+2)))))*3=9
+(1)+(((((2/4)))))=1.5
+((((((1)+3)))))/4=1
+(1)+(((((2^3)))))=9
+((((((1)+2)))))^3=27
+(1)-(((((2+3)))))=-4
+((((((1)-2)))))+3=2
+(1)-(((((2*3)))))=-5
+((((((1)-2)))))*3=-3
+(1)-(((((2/4)))))=0.5
+((((((1)-2)))))/5=-0.2
+(1)-(((((2^3)))))=-7
+((((((1)-3)))))^3=-8
+(2)*(((((1+3)))))=8
+((((((2)*3)))))+4=10
+(2)*(((((1-3)))))=-4
+((((((2)*3)))))-4=2
+(2)*(((((3*4)))))=24
+((((((2)*3)))))*5=30
+(2)*(((((2^3)))))=16
+((((((2)*3)))))^2=36
+(9)/(((((1+2)))))=3
+((((((9)/3)))))+2=5
+(8)/(((((4-2)))))=4
+((((((8)/4)))))-1=1
+(8)/(((((2*2)))))=2
+((((((9)/3)))))*2=6
+(8)/(((((2^3)))))=1
+((((((6)/3)))))^4=16
+(3)^(((((1+2)))))=27
+((((((2)^2)))))+3=7
+(4)^(((((5-3)))))=16
+((((((2)^4)))))-9=7
+(2)^(((((2*2)))))=16
+((((((2)^3)))))*3=24
+(3)^(((((8/4)))))=9
+((((((3)^2)))))/6=1.5
+(2)^(((((2^3)))))=256
+((((((2)^3)))))^2=64
+
+# imbalanced
+!(()
+!())
+!+(()
+!+())
+!-(()
+!-())
+!+((2)
+!+(2))
+!-((2)
+!-(2))
+
+# negative nesting
+!( ## global balancing
+!2)(+2
+!-)(3
+!(+))((3)
+!,1)*(2
+!) ## global balancing
+
+# empty function arguments
+!min(,)
+!min(,4)
+!min(4,)
+!min(,,)
+!min(4,,)
+!min(,4,)
+!min(,,4)
+!min(,,,)
+
+# misplaced function argument
+!min()1
+!min(1,)2
+!min1(,2)
+!min1(,)2
+!min 1(,2)
+!min 1(,)2
+!1min()
+!1min(,2)
+!1min(,)2
+!1 min()
+!1 min(,2)
+!1 min(,)2
+!min(1),2
+
+# leading or trailing comma
+!1,
+!1+1,
+!1+1,1,
+!1+1,1,,
+!sqrt(4),
+!(1+1),
+!(1+1,)
+!((1+1),)
+!,1
+!,1+1
+!,sqrt(4)
+!,(1+1)
+!,,(1+1)
+!,,(,1+1)
+!(,1+1),
+!(,1+1),,
+
