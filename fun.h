@@ -36,7 +36,7 @@ static inline double fun_identity(size_t nargs, const tok *ap)
 
 static inline double fun_dummy(size_t nargs, const tok *ap)
 {
-	printf("FUNCTION DUMMY: %d {", nargs); for (size_t i = 0; i < nargs; i++) dbg_dump_tok(NULL, &ap[2*i], " "); printf("}\n");
+	printf("FUNCTION DUMMY: %zu {", nargs); for (size_t i = 0; i < nargs; i++) dbg_dump_tok(NULL, &ap[2*i], " "); printf("}\n");
 	return 0;
 }
 
