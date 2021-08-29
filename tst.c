@@ -32,6 +32,17 @@
  *
  * Usage:
  * valgrind ./tst <test.in
+ *
+ * Testcase syntax:
+ *  test    ::= <varlist>? <tail> '\n'
+ *  varlist ::= <vardef> <varlist>?
+ *  vardef  ::= <name> ':' <value> ';'
+ *  name    ::= any variable name, not containing ':' or ';'
+ *  value   ::= floating-point number parsed by strtod
+ *  tail    ::= '!' <failure> | <success> '=' <value> | <success> '~' <value>
+ *  failure ::= any illegal xpr expression
+ *  success ::= any legal xpr expression
+ *
  */
 #ifdef MAIN
 
@@ -42,18 +53,22 @@
 #include <string.h>
 #include <stdbool.h>
 
+static bool verbose;
+
 static void die(const char *msg)
 {
 	perror(msg);
 	exit(EXIT_FAILURE);
 }
 
-static void test_fail(char *line, unsigned long long lineno)
+static void test_fail(char *line, unsigned long long lineno, struct xpr_var *vars)
 {
 	char *realline = strtok(line, "\n");
 	if (!realline)
 		realline = "";
-	double is = xpr(realline, NULL);
+	if (verbose)
+		fprintf(stderr, "[-] %s\n", realline);
+	double is = xpr(realline, vars);
 	if (!isnan(is))
 		fprintf(stderr, "%llu: %s=%lf but should fail\n", lineno, realline, is);
 }
@@ -82,7 +97,7 @@ static bool equal_enough(double is, double exp, bool exact)
 
 }
 
-static void test_success(char *line, unsigned long long lineno)
+static void test_success(char *line, unsigned long long lineno, struct xpr_var *vars)
 {
 	char *sep = "=";
 	bool exact = true;
@@ -93,6 +108,8 @@ static void test_success(char *line, unsigned long long lineno)
 	char *realline = strtok(line, "\n");
 	if (!realline)
 		goto syntax_error;
+	if (verbose)
+		fprintf(stderr, "[%c] %s\n", exact ? '+' : '~', realline);
 	char *expr = strtok(realline, sep);
 	char *expect = strtok(NULL, sep);
 	if (!expr || !expect)
@@ -101,16 +118,18 @@ static void test_success(char *line, unsigned long long lineno)
 	double exp = strtod(expect, &end);
 	if (end && *end)
 		goto syntax_error;
-	double is = xpr(expr, NULL);
+	double is = xpr(expr, vars);
 	if (!equal_enough(is, exp, exact))
 		fprintf(stderr, "%llu: %s=%lf expected=%lf [%la %s %la]\n", lineno, expr, is, exp, is, exact ? "!=" : "!~", exp);
 	return;
+
 	syntax_error:
 	fprintf(stderr, "%llu: syntax error. skip.\n", lineno);
 }
 
 int main(void)
 {
+	verbose = !!getenv("VERBOSE");
 	char *line = NULL;
 	size_t linesz = 0;
 	unsigned long long lineno = 0;
@@ -121,10 +140,39 @@ int main(void)
 			break;
 		if (line[0] == '#' || line[0] == '\n')
 			continue;
-		if (line[0] == '!')
-			test_fail(line + 1, lineno);
+
+		// find variable definitions
+		struct xpr_var *vars = NULL;
+		size_t varsz = 0;
+		char *tail = line;
+		while (strchr(tail, ';')) {
+			//fprintf(stderr, "!var: line=%s\n", tail);
+			char *vardef = strtok(tail, ";");
+			tail += strlen(vardef)+1;
+			//fprintf(stderr, " vardef=`%s', rest=%s\n", vardef, tail);
+			char *name = strtok(vardef, ":");
+			char *vstr = strtok(NULL, ":");
+			if (!vstr)
+				vstr="0";
+			//fprintf(stderr, " .name=`%s', .value=`%s'\n", name, vstr);
+			varsz++;
+			vars = realloc(vars, (1+varsz) * sizeof(struct xpr_var));
+			if (!vars)
+				die("realloc");
+			vars[varsz-1].name = name;
+			vars[varsz-1].value = strtod(vstr, NULL);
+			if (verbose)
+				fprintf(stderr, "[=] \"%s\" -> %lf\n", name, vars[varsz-1].value);
+			vars[varsz].name = NULL;
+			vars[varsz].value = 0;
+		}
+
+		if (tail[0] == '!')
+			test_fail(tail + 1, lineno, vars);
 		else
-			test_success(line, lineno);
+			test_success(tail, lineno, vars);
+
+		free(vars);
 	}
 	if (ferror(stdin))
 		die("getline");

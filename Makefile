@@ -10,7 +10,9 @@ THELIB = $(LIB:%=lib%.so)
 BIN = $(SRC:%.c=%)
 
 CC    ?= cc
+AFLCC ?= afl-clang
 LD    := $(CC)
+AFLLD := $(AFLCC)
 RM    ?= rm
 SHELL ?= sh
 
@@ -55,3 +57,5 @@ clean:
 	$E "CLEAN" ""
 	$Q $(RM) $(OBJ) $(PICOBJ) $(THELIB) $(BIN)
 
+fuzzme.o: CC=$(AFLCC)
+fuzzme: LD=$(AFLLD)

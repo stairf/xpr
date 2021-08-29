@@ -47,9 +47,13 @@ static inline double fun_dummy(size_t nargs, const tok *ap)
 		if (0 == nargs) \
 			return (empty); \
 		double l = ARG(ap, 0); \
+		if (isnan(l)) \
+			return l; \
 		for (size_t i = 1; i < nargs; i++) { \
 			double r = ARG(ap, i); \
 			l = (expr); \
+			if (isnan(l)) \
+				return l; \
 		} \
 		return l; \
 	}
@@ -64,6 +68,7 @@ static inline double fun_dummy(size_t nargs, const tok *ap)
 
 FOLD(min, XPR_ERR, (l < r) ? l : r)
 FOLD(max, XPR_ERR, (l > r) ? l : r)
+FOLD(sum, 0, l + r);
 
 WRAP(acos)
 WRAP(asin)

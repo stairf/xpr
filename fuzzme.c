@@ -57,10 +57,11 @@ int main(void)
 	unsigned long long lineno = 0;
 	while (1) {
 		lineno++;
-		ssize_t result = getline(&line, &linesz, stdin);
+		ssize_t result = getdelim(&line, &linesz, '\0', stdin);
 		if (result < 0)
 			break;
-		printf("%llu: %lf\n", lineno, xpr(line, NULL));
+		xpr(line, NULL);
+		//printf("%llu: %lf\n", lineno, xpr(line, NULL));
 	}
 	if (ferror(stdin))
 		die("getline");

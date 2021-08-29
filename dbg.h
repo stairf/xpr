@@ -26,7 +26,7 @@
  *****/
 
 
-#ifdef DEBUG
+#if CONFIG_DEBUG
 #  define dbg(...) printf(__VA_ARGS__)
 
 static inline void dbg_dump_tok(const char *name, const tok *t, const char *end)
@@ -46,25 +46,26 @@ static inline void dbg_dump_tok(const char *name, const tok *t, const char *end)
 		}
 	} else if (CLASS_FUNC == CLASS_GET(t->tag)) {
 		switch(BS_IGN(t->tag)) {
-		case TK_FUN_ACOS:               dbg("acos");                  goto out;
-		case TK_FUN_ASIN:               dbg("asin");                  goto out;
-		case TK_FUN_ATAN:               dbg("atan");                  goto out;
-		case TK_FUN_ACOSH:              dbg("acosh");                 goto out;
-		case TK_FUN_ASINH:              dbg("asinh");                 goto out;
-		case TK_FUN_ATANH:              dbg("atanh");                 goto out;
-		case TK_FUN_COS:                dbg("cos");                   goto out;
-		case TK_FUN_SIN:                dbg("sin");                   goto out;
-		case TK_FUN_TAN:                dbg("tan");                   goto out;
-		case TK_FUN_COSH:               dbg("cosh");                  goto out;
-		case TK_FUN_SINH:               dbg("sinh");                  goto out;
-		case TK_FUN_TANH:               dbg("tanh");                  goto out;
-		case TK_FUN_LOG:                dbg("log");                   goto out;
-		case TK_FUN_EXP:                dbg("exp");                   goto out;
-		case TK_FUN_SQRT:               dbg("sqrt");                  goto out;
-		case TK_FUN_CBRT:               dbg("cbrt");                  goto out;
-		case TK_FUN_MIN:                dbg("min");                   goto out;
-		case TK_FUN_MAX:                dbg("max");                   goto out;
-		default:                        dbg("?()");                   goto out;
+		case TK_FUN_ACOS:               dbg("[acos]");                  goto out;
+		case TK_FUN_ASIN:               dbg("[asin]");                  goto out;
+		case TK_FUN_ATAN:               dbg("[atan]");                  goto out;
+		case TK_FUN_ACOSH:              dbg("[acosh]");                 goto out;
+		case TK_FUN_ASINH:              dbg("[asinh]");                 goto out;
+		case TK_FUN_ATANH:              dbg("[atanh]");                 goto out;
+		case TK_FUN_COS:                dbg("[cos]");                   goto out;
+		case TK_FUN_SIN:                dbg("[sin]");                   goto out;
+		case TK_FUN_TAN:                dbg("[tan]");                   goto out;
+		case TK_FUN_COSH:               dbg("[cosh]");                  goto out;
+		case TK_FUN_SINH:               dbg("[sinh]");                  goto out;
+		case TK_FUN_TANH:               dbg("[tanh]");                  goto out;
+		case TK_FUN_LOG:                dbg("[log]");                   goto out;
+		case TK_FUN_EXP:                dbg("[exp]");                   goto out;
+		case TK_FUN_SQRT:               dbg("[sqrt]");                  goto out;
+		case TK_FUN_CBRT:               dbg("[cbrt]");                  goto out;
+		case TK_FUN_MIN:                dbg("[min]");                   goto out;
+		case TK_FUN_MAX:                dbg("[max]");                   goto out;
+		case TK_FUN_SUM:                dbg("[sum]");                   goto out;
+		default:                        dbg("[?()]");                   goto out;
 		}
 	} else {
 		switch (BS_IGN(t->tag)) {

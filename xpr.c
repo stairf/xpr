@@ -56,6 +56,7 @@
  *
  */
 #include "xpr.h"
+#include "config.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -64,6 +65,9 @@
 #include <math.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <alloca.h>
+#include <limits.h>
+#include <stdint.h>
 
 /*
  * the tok.tag value is a bit field:
@@ -152,8 +156,9 @@
 #define TK_FUN_SIN       TK_FUN_BY_ID(0x11)
 #define TK_FUN_SINH      TK_FUN_BY_ID(0x12)
 #define TK_FUN_SQRT      TK_FUN_BY_ID(0x13)
-#define TK_FUN_TAN       TK_FUN_BY_ID(0x14)
-#define TK_FUN_TANH      TK_FUN_BY_ID(0x15)
+#define TK_FUN_SUM       TK_FUN_BY_ID(0x14)
+#define TK_FUN_TAN       TK_FUN_BY_ID(0x15)
+#define TK_FUN_TANH      TK_FUN_BY_ID(0x16)
 
 
 typedef struct token {
@@ -180,6 +185,21 @@ static inline void next_num(const char **const strp, tok *const out)
 	out->tag = TK_NUM;
 	out->data.value = val;
 }
+
+static inline const var *var_find(const var *const vars, const char *name, size_t len)
+{
+	if (NULL == vars)
+		return NULL;
+	const var *v = vars;
+	while (NULL != v->name) {
+		if ((strlen(v->name) == len) && (0 == memcmp(v->name, name, len)))
+			return v;
+		v++;
+	}
+	return NULL;
+}
+
+#define var_conf(v, name) var_find((v), (name), sizeof(name)-1)
 
 static inline void next_ident(const char **const strp, tok *const out, const var *const vars)
 {
@@ -221,7 +241,9 @@ static inline void next_ident(const char **const strp, tok *const out, const var
 		CASE("log", TK_FUN_LOG)
 		CASE("max", TK_FUN_MAX)
 		CASE("min", TK_FUN_MIN)
+		CNST("phi", 1.61803398874989484820458683436563811772030917980576)
 		CASE("sin", TK_FUN_SIN)
+		CASE("sum", TK_FUN_SUM)
 		CASE("tan", TK_FUN_TAN)
 		break;
 	case 4:
@@ -290,33 +312,43 @@ static inline void next(const char **const strp, tok *const out, const var *cons
 
 static inline size_t checkstack(size_t stacksz, size_t sp, size_t i)
 {
-	assert(sp < stacksz && "stack overflow");
-	assert(i <= sp && "stack underflow");
+	assert(sp < stacksz || !!! "stack overflow");
+	assert(i <= sp || !!! "stack underflow");
 	return sp - i;
 }
 
 static inline size_t reduce_fun(tok *const stack, const size_t stacksz, const size_t sp)
 {
 #	define get(i) (stack[checkstack(stacksz,sp,i)])
+	checkstack(stacksz,sp,0);
 	size_t ntoks = 1;
 	size_t nargs = 0;
 	bool expect_val = true;
-	// verify alternating sequence of TK_VALUE and TK_COMMA, until TK_OPEN
-	while ((ntoks < sp) && (BS_IGN(TK_OPEN) != BS_IGN(get(ntoks).tag))) {
-		if (expect_val) {
-			if (CLASS_VALUE != CLASS_GET(get(ntoks).tag))
-				goto error;
-			nargs++;
-		} else {
-			if (TK_COMMA != get(ntoks).tag)
-				goto error;
+	assert(0 != sp || !!! "not enough tokens for a function call");
+	if (BS_IGN(TK_OPEN) == BS_IGN(get(1).tag)) {
+		// empty argument list. nothing to do.
+	} else {
+		// verify alternating sequence of TK_VALUE and TK_COMMA, until TK_OPEN
+		while ((ntoks < sp) && (BS_IGN(TK_OPEN) != BS_IGN(get(ntoks).tag))) {
+			if (expect_val) {
+				if (CLASS_VALUE != CLASS_GET(get(ntoks).tag))
+					goto error;
+				nargs++;
+			} else {
+				if (TK_COMMA != get(ntoks).tag)
+					goto error;
+			}
+			expect_val = !expect_val;
+			ntoks++;
 		}
-		expect_val = !expect_val;
-		ntoks++;
+		// check if TK_OPEN was found, or stopped at first token
+		if (expect_val || (BS_IGN(TK_OPEN) != BS_IGN(get(ntoks).tag)))
+			goto error;
 	}
-	// check if TK_OPEN was found, or stopped at first token
-	if (expect_val || (BS_IGN(TK_OPEN) != BS_IGN(get(ntoks).tag)))
-		goto error;
+	// check that ntoks and nargs are consistent
+	assert(ntoks == nargs * 2 + !nargs || !!! "wrong function argument token sequence");
+	assert(ntoks <= sp || !!! "stack underflow");
+
 	// get first argument token and stored BS value
 	tok *firstarg = &get(ntoks - 1);
 	int bs = BS_GET(get(ntoks).tag);
@@ -328,6 +360,8 @@ static inline size_t reduce_fun(tok *const stack, const size_t stacksz, const si
 		ntoks++;
 		funid = FUNID(get(ntoks).tag);
 	}
+
+	dbg("fcall funid=%d ntoks=%zu nargs=%zu\n", (int) funid, ntoks, nargs);
 
 	double val;
 	switch (funid) {
@@ -351,13 +385,16 @@ static inline size_t reduce_fun(tok *const stack, const size_t stacksz, const si
 	CASE(TK_FUN_ROUND, fun_round)
 	CASE(TK_FUN_SIN,   fun_sin)
 	CASE(TK_FUN_SINH,  fun_sinh)
+	CASE(TK_FUN_SUM,   fun_sum)
 	CASE(TK_FUN_SQRT,  fun_sqrt)
 	CASE(TK_FUN_TAN,   fun_tan)
 	CASE(TK_FUN_TANH,  fun_tanh)
-	default: goto error;
+	default:
+		assert(0 || !!! "unknown function ID");
+		goto error;
 #	undef CASE
 	}
-	if (isnan(val) || isinf(val))
+	if (isnan(val))
 		goto error;
 
 	get(ntoks).tag = BS_SET(bs, TK_NUM);
@@ -402,13 +439,13 @@ static inline size_t reduce_step(tok *const stack, const size_t stacksz, const s
 
 #	define BINARY_REDUCE(tk, expr) BINARY_REDUCE_COND(tk, true, expr)
 
-	if (0 == sp)
-		goto error;
+	assert(0 != sp || !!! "cannot reduce an empty stack");
 
 	// check for unary operators
 	if ((1 <= sp) && (CLASS_OP == CLASS_GET(get(1).tag)) && (TK_OP_IS_UNARY & get(1).tag)) {
 		UNARY_REDUCE(TK_UMINUS, -)
 		UNARY_REDUCE(TK_UPLUS,  +)
+		assert(0 || !!! "unknown unary operator");
 		goto error;
 	}
 
@@ -418,13 +455,16 @@ static inline size_t reduce_step(tok *const stack, const size_t stacksz, const s
 		BINARY_REDUCE(TK_MINUS, l - r)
 		BINARY_REDUCE(TK_MUL, l * r)
 		BINARY_REDUCE_COND(TK_DIV, 0 != r, l / r)
-		BINARY_REDUCE_COND(TK_EXP, (0 <= l) || (round(r) == r), pow(l, r))
+		BINARY_REDUCE_COND(TK_EXP, !isnan(l) && !isnan(r) && ((0 <= l) || (round(r) == r)), pow(l, r))
+		// reachable if stack looks like [ ..., {TK_OPEN or TK_COMMA}, <value> ]
+		goto error;
 	}
 
-	// reduction is not possible
 #	undef UNARY_REDUCE
 #	undef BINARY_REDUCE
 #	undef BINARY_REDUCE_COND
+
+	// reduction is not possible
 error:
 	get(0).tag = TK_ERR;
 	return 0;
@@ -436,24 +476,60 @@ static inline size_t reduce(tok *const stack, const size_t stacksz, const size_t
 	size_t delta = 0;
 	while ((delta < sp) && (BS_GET(stack[sp - delta].tag) > bs)) {
 		delta += reduce_step(stack, stacksz, sp - delta);
-		if ((delta > sp) || (TK_ERR == stack[sp - delta].tag)) {
+		assert(delta <= sp || !!! "attempt to make stack more than empty");
+		if ((TK_ERR == stack[sp - delta].tag)) {
 			stack[sp].tag = TK_ERR;
 			return 0;
 		}
+		dbg("here: delta=%zu\n", delta);
 	}
 	return delta;
 }
 
 double xpr(const char *str, const var *const vars)
 {
-	size_t len = strlen(str);
+	const size_t len = strlen(str);
+
+	// at most, each character produces a token, and the trailing 0-byte produces an EOF token
+	if (len >= SIZE_MAX / sizeof(tok) - 1)
+		return XPR_ERR;
+	const size_t capacity = sizeof(tok) * (len + 1);
 
 	/*
 	 * This parser iterates over the input string exactly once, from left to
 	 * right. It contains a stack of tokens that represent the already-parsed
 	 * input string.
 	 */
-	tok stack[len + 1]; // +1 for TK_EOF
+	tok *stack;
+
+
+#if CONFIG_STACK_LIMIT == 0
+	bool use_malloc = false;
+#elif CONFIG_STACK_LIMIT == 1
+	bool use_malloc = true;
+#else
+	bool use_malloc = ((size_t)(CONFIG_STACK_LIMIT) - 1) <= len;
+#endif
+
+#if CONFIG_DYNAMIC_STACK_LIMIT
+	const struct xpr_var *dyn_malloc = var_conf(vars, "$malloc");
+	if (dyn_malloc) {
+		if (!isinf(dyn_malloc->value) && !isnan(dyn_malloc->value) && dyn_malloc->value >= 0)
+			use_malloc = ((size_t)(dyn_malloc->value) - 1) <= len;
+	}
+#endif
+
+
+	if (use_malloc)
+		stack = malloc(capacity);
+	else
+		stack = alloca(capacity);
+
+	if (!stack)
+		goto error;
+
+	double result = 0;
+
 	const size_t stacksz = len + 1;
 	size_t sp = 0;
 #	define get(i) (stack[checkstack(stacksz,sp,i)])
@@ -465,21 +541,23 @@ double xpr(const char *str, const var *const vars)
 		dbg_dump_tok("next", &cur, "\n");
 
 		if (TK_ERR == cur.tag) {
-			return XPR_ERR;
+			goto error;
 		} else if (TK_SPACE == cur.tag) {
 			// ignore space, do not increment sp. In the next iteration, the
 			// next() function will overwrite the space token.
 		} else if (TK_EOF == cur.tag) {
 			// an empty string is an error
 			if (0 == sp)
-				return XPR_ERR;
+				goto error;
 			sp--; // pop EOF token
 			sp -= reduce(stack, stacksz, sp, BS_NONE);
 			// reduction to BS_NONE enforces evaluation of all operators,
 			// leaving only one value token on the stack.
-			if ((0 == sp) && (CLASS_VALUE == CLASS_GET(cur.tag)))
-				return cur.data.value;
-			return XPR_ERR;
+			if ((0 == sp) && (CLASS_VALUE == CLASS_GET(cur.tag))) {
+				result = cur.data.value;
+				goto out;
+			}
+			goto error;
 		} else if (CLASS_VALUE == CLASS_GET(cur.tag)) {
 			// store the current BS in the value token
 			cur.tag = BS_SET(bs, cur.tag);
@@ -496,29 +574,29 @@ double xpr(const char *str, const var *const vars)
 		} else if (TK_CLOSE == cur.tag) {
 			// TK_CLOSE must not be the first token
 			if (0 == sp)
-				return XPR_ERR;
+				goto error;
 			// reduce last function argument
 			if ((BS_IGN(TK_OPEN) != BS_IGN(get(1).tag))) {
 				sp -= reduce(stack, stacksz, sp - 1, BS_OPEN);
 				if (TK_ERR == cur.tag)
-					return XPR_ERR;
+					goto error;
 			}
 			// reduce the function call
 			size_t delta = reduce_fun(stack, stacksz, sp);
 			sp -= delta;
 			if (TK_ERR == cur.tag)
-				return XPR_ERR;
+				goto error;
 		} else if (TK_COMMA == cur.tag) {
 			// TK_COMMA must not be the first token
 			if (0 == sp)
-				return XPR_ERR;
+				goto error;
 			// reduce argument before comma
 			size_t delta = reduce(stack, stacksz, sp - 1, BS_OPEN);
 			if (delta)
 				get(delta) = cur;
 			sp -= delta;
 			if (TK_ERR == cur.tag)
-				return XPR_ERR;
+				goto error;
 			// keep current token, update bs
 			sp++;
 			bs = BS_OPEN;
@@ -529,7 +607,7 @@ double xpr(const char *str, const var *const vars)
 				if ((0 == sp) || (CLASS_OP == CLASS_GET(get(1).tag)))
 					cur.tag = TK_TO_UNARY(cur.tag); // update IS_UNARY, BS, and AS
 			} else if (0 == sp) {
-				return XPR_ERR;
+				goto error;
 			}
 
 			if (0 != sp) {
@@ -541,16 +619,23 @@ double xpr(const char *str, const var *const vars)
 				}
 				sp -= delta;
 				if (TK_ERR == cur.tag)
-					return XPR_ERR;
+					goto error;
 			}
 			bs = BS_GET(cur.tag);
 			sp++;
 		} else {
-			assert(0 && "invalid token");
+			assert(0 || !!! "invalid token");
 		}
 	}
 #	undef cur
 #	undef get
+
+error:
+	result = XPR_ERR;
+out:
+	if (use_malloc)
+		free(stack);
+	return result;
 }
 
 #ifdef MAIN

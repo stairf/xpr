@@ -74,9 +74,10 @@ int main(int argc, char **argv)
 	fprintf(stderr, "seed: %d\n", seed);
 	srandom(seed);
 	while (1) {
-		size_t n = random() & 0xff;
-		char buf[n*8];
+		size_t n = random() & 0xff ?: 1;
+		char buf[n*8+1];
 		char *str = buf;
+		*str = '\0';
 		for (size_t i = 0; i < n; i++) {
 			str = stpcpy(str, " ");
 			str = stpcpy(str, tkns[random() % NTOKENS]);
