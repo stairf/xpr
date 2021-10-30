@@ -59,7 +59,7 @@ evaluates it, and returns the result.
 // ... later ...
 const char *expr = "1+1";
 double d = xpr(expr, NULL);
-printf("%ld\n", d); // prints 2.0
+printf("%f\n", d); // prints 2.0
 ```
 
 The return value is the result of the given expression. On error, `xpr()` returns
@@ -75,7 +75,7 @@ Constants are a built-in mapping of identifiers to values.
 ```c
 const char *expression = "((2*phi)-1)^2";
 double computed = xpr(expression, NULL);
-printf("%ld\n", computed); // prints 5.0
+printf("%f\n", computed); // prints 5.0
 ```
 
 ### Overview
@@ -103,7 +103,7 @@ differently, depending on how many arguments are given. Some functions (e.g.,
 ```c
 const char *expression = "sqrt((1+1)*2)";
 double computed = xpr(expression, NULL);
-printf("%ld\n", computed); // prints 2.0
+printf("%f\n", computed); // prints 2.0
 ```
 
 ### Overview
@@ -165,7 +165,7 @@ xpr_var variables[2] = {
 };
 const char *expr = "1+x";
 double d = xpr(expr, variables);
-printf("%ld\n", d); // prints 2.0
+printf("%f\n", d); // prints 2.0
 ```
 
 ## Concurrency
