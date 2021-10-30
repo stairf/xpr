@@ -153,12 +153,13 @@
 #define TK_FUN_MAX       TK_FUN_BY_ID(0x0e)
 #define TK_FUN_MIN       TK_FUN_BY_ID(0x0f)
 #define TK_FUN_ROUND     TK_FUN_BY_ID(0x10)
-#define TK_FUN_SIN       TK_FUN_BY_ID(0x11)
-#define TK_FUN_SINH      TK_FUN_BY_ID(0x12)
-#define TK_FUN_SQRT      TK_FUN_BY_ID(0x13)
-#define TK_FUN_SUM       TK_FUN_BY_ID(0x14)
-#define TK_FUN_TAN       TK_FUN_BY_ID(0x15)
-#define TK_FUN_TANH      TK_FUN_BY_ID(0x16)
+#define TK_FUN_SCALE     TK_FUN_BY_ID(0x11)
+#define TK_FUN_SIN       TK_FUN_BY_ID(0x12)
+#define TK_FUN_SINH      TK_FUN_BY_ID(0x13)
+#define TK_FUN_SQRT      TK_FUN_BY_ID(0x14)
+#define TK_FUN_SUM       TK_FUN_BY_ID(0x15)
+#define TK_FUN_TAN       TK_FUN_BY_ID(0x16)
+#define TK_FUN_TANH      TK_FUN_BY_ID(0x17)
 
 
 typedef struct token {
@@ -263,6 +264,7 @@ static inline void next_ident(const char **const strp, tok *const out, const var
 		CASE("atanh", TK_FUN_ATANH)
 		CASE("floor", TK_FUN_FLOOR)
 		CASE("round", TK_FUN_ROUND)
+		CASE("scale", TK_FUN_SCALE)
 		break;
 #	undef CASE
 #	undef CNST
@@ -383,6 +385,7 @@ static inline size_t reduce_fun(tok *const stack, const size_t stacksz, const si
 	CASE(TK_FUN_MAX,   fun_max)
 	CASE(TK_FUN_MIN,   fun_min)
 	CASE(TK_FUN_ROUND, fun_round)
+	CASE(TK_FUN_SCALE, fun_scale)
 	CASE(TK_FUN_SIN,   fun_sin)
 	CASE(TK_FUN_SINH,  fun_sinh)
 	CASE(TK_FUN_SUM,   fun_sum)

@@ -89,7 +89,6 @@ WRAP(sqrt)
 WRAP(cbrt)
 WRAP(exp)
 
-
 static inline double fun_log(size_t nargs, const tok *ap)
 {
 	if (nargs == 1) {
@@ -100,6 +99,31 @@ static inline double fun_log(size_t nargs, const tok *ap)
 		if (ARG(ap, 0) <= 0 || ARG(ap, 0) == 1 || ARG(ap, 1) <= 0)
 			return XPR_ERR;
 		return log(ARG(ap, 1)) / log(ARG(ap, 0));
+	} else {
+		return XPR_ERR;
+	}
+}
+
+static inline double fun_scale(size_t nargs, const tok *ap)
+{
+	if (3 == nargs) {
+		// scale(A,B,x) translates x from scale [0,A] to [0,B]
+		double da = ARG(ap, 0);
+		double db = ARG(ap, 1);
+		if (0 == da)
+			return XPR_ERR;
+		return ARG(ap, 2) / da * db;
+	} else if (5 == nargs) {
+		// scale(a,A,b,B,x) translates x from scale [a,A] to [b,B]
+		double al = ARG(ap, 0);
+		double ah = ARG(ap, 1);
+		double bl = ARG(ap, 2);
+		double bh = ARG(ap, 3);
+		double da = ah - al;
+		double db = bh - bl;
+		if (0 == da)
+			return XPR_ERR;
+		return (ARG(ap, 4) - al) / da * db + bl;
 	} else {
 		return XPR_ERR;
 	}
