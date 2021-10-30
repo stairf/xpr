@@ -1,5 +1,7 @@
 # XPR
 
+![make-ci](https://github.com/stairf/xpr/actions/workflows/make-ci.yml/badge.svg)
+
 XPR is a KISS library to evaluate arithmetic expressions (for example, it
 evaluates the string `"1+1"` to the number `2`). All calculations use
 double-precision floating-point numbers internally. XPR supports canonical

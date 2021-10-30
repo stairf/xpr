@@ -57,5 +57,9 @@ clean:
 	$E "CLEAN" ""
 	$Q $(RM) $(OBJ) $(PICOBJ) $(THELIB) $(BIN)
 
+.PHONY: ci
+ci: xpr tst
+	$Q ./tst <test.in
+
 fuzzme.o: CC=$(AFLCC)
 fuzzme: LD=$(AFLLD)

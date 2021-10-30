@@ -1,0 +1,11 @@
+name: make-ci
+on: [push]
+jobs:
+  run-make-ci:
+    name: Invoke make ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: make ci
+      - run: make clean
+
